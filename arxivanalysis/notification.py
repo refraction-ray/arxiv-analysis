@@ -12,7 +12,7 @@ def makecss():
                 '.title {font-size: large; font-weight: bold; line-height: 120%%; }'
                 '.summary {line-height: 130%%; }'
                 '.authors {font-style:italic; }'
-                'p .tag {lin-height:130%%}'
+                'p .tags {lin-height:130%%}'
                 '.tag {display: inline-block; background-color: #aab5c3; border-radix: 10px; color: #fff; margin: 0 5px 5px 0; padding: 0px 10px;}'
                 '</style>')
 
