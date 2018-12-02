@@ -8,7 +8,9 @@ from bs4 import BeautifulSoup
 import re
 from arxivanalysis.arxiv import query
 from arxivanalysis.notification import sendmail, makemailcontent
+from datetime import datetime
 
+weekdaylist = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 class arxivException(Exception):
     pass
@@ -23,7 +25,8 @@ class Paperls:
     :param id_list: list for strings of arxiv id, only available for mode 1
     :param start: int, the offset of the return results in mode 1. In mode 2, start=0 for new list, 1 for cross list and 2 for both.
     :param max_results: int, the max number of return items, only available for mode 1
-    :param sort_by: string, only available for mode 1, see arxiv api doc
+    :param sort_by: string, for mode 1, see arxiv api doc. for mode 2, the only available one is "submittedDate",
+                    which means check the date to make sure the submission is new for today.
     :param sort_order: string, only available for mode 1, see arxiv api doc
     '''
     def __init__(self,
@@ -41,10 +44,13 @@ class Paperls:
             idextract = re.compile('.*/([0-9.]*)')
             for c in self.contents:
                 c['summary'] = re.sub(r'\n|  ', ' ', c.get('summary',''))
-                c['arxiv_id'] = idextract.match(c['arxiv_url'])[1]
+                c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
         elif search_mode == 2: # new submission fetch
             self.url = "https://arxiv.org/list/" + search_query + "/new"
-            self.contents = new_submission(self.url, mode=start)
+            samedate = False
+            if sort_by == "submittedDate":
+                samedate = True
+            self.contents = new_submission(self.url, mode=start, samedate=samedate)
 
     def merge(self, paperlsobj):
         idlist = [c['arxiv_id'] for c in self.contents]
@@ -96,16 +102,22 @@ def keyword_match(text, kwlist, threhold=80):
     return [r for r in rs if r[-1] > threhold]
 
 
-def new_submission(url, mode=1):
+def new_submission(url, mode=1, samedate=False):
     '''
     fetching new submission everyday
 
     :param url: string, the url for the new page of certain category
     :param mode: int, 0 for new, 1 for cross, 2 for both
+    :param samedate: boolean, if true, there is a check to make sure the submission is for today
     :return: list of dict, containing all papers
     '''
     pa = requests.get(url)
     so = BeautifulSoup(pa.text, 'lxml')
+    if samedate is True:
+        date_filter = re.compile(r'^New submissions for ([a-zA-Z]+), .*')
+        weekdaystr = date_filter.match(so('h3')[0].string).group(1)
+        if weekdaylist[datetime.today().weekday()] != weekdaystr:
+            return None
     if mode == 0:
         newc = so('dl')[0]
     elif mode == 1:
