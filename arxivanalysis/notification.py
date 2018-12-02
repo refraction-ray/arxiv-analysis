@@ -12,18 +12,23 @@ def makecss():
                 '.title {font-size: large; font-weight: bold; line-height: 120%%; }'
                 '.summary {line-height: 130%%; }'
                 '.authors {font-style:italic; }'
+                'p .tag {lin-height:130%%}'
+                '.tag {display: inline-block; background-color: #aab5c3; border-radix: 10px; color: #fff; margin: 0 5px 5px 0; padding: 0px 10px;}'
                 '</style>')
 
 def makehtml(content,count):
-    htmltext = (
+    htmltext1 = (
                 '<p class="id">[%s] &nbsp  arXiv:<a href="%s">%s</a> &nbsp  &nbsp Keywords: %s</p>'
                 '<p class="title">%s</p>'
-                '<p class="authors">%s </p>'
-                '<hr>'
-                '<p class="summary">%s</p>'
-               )%(count, content['arxiv_url'], content['arxiv_id'],", ".join([w[0] for w in content['keyword']]),
-                                 content['title'],", ".join(content['authors']), content['summary'])
-    return htmltext
+                '<p class="authors">%s </p>')%(count, content['arxiv_url'], content['arxiv_id'],", ".join([w[0] for w in content['keyword']]),
+                        content['title'],", ".join(content['authors']))
+    htmltext2 = '<p class="tags">'
+    for t in content['tags']:
+        htmltext2 +=  '<span class="tag"> %s </span> &nbsp'%t
+    htmltext2 += '</p>'
+    htmltext3 = ('<hr>'
+                 '<p class="summary">%s</p>')%(content['summary'])
+    return htmltext1+htmltext2+htmltext3
 
 def makemailcontent(headline, contents):
     body = makecss() + " ".join([makehtml(it, i + 1) for i, it in enumerate(contents)])

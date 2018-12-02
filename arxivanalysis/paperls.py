@@ -9,6 +9,7 @@ import re
 from arxivanalysis.arxiv import query
 from arxivanalysis.notification import sendmail, makemailcontent
 from datetime import datetime
+from arxivanalysis.rake import Rake
 
 weekdaylist = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -43,6 +44,7 @@ class Paperls:
                                             sort_by=sort_by, sort_order=sort_order)
             idextract = re.compile('.*/([0-9.]*)')
             for c in self.contents:
+                c['title'] = re.sub(r'\n|  ', ' ', c.get('title', ''))
                 c['summary'] = re.sub(r'\n|  ', ' ', c.get('summary',''))
                 c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
         elif search_mode == 2: # new submission fetch
@@ -58,13 +60,15 @@ class Paperls:
             if c['arxiv_id'] not in idlist:
                 self.contents.append(c)
 
-    def interest_match(self, choices):
+    def interest_match(self, choices, stoplistpath = 'SmartStopList.txt'):
         contents = self.contents
         for content in contents:
             content['keyword'] = keyword_match(
                 content['title'] + '. ' + content['title'] + '. ' + ','.join(content['authors']) + '. ' +
                 content['summary'], choices)
             content['weight'] = sum([choices[kw[0]] for kw in content['keyword']])
+            rake = Rake(stoplistpath)
+            content['tags'] = select_tags(rake.run(content['title']+". "+content['summary']+" "+content['title']))
 
     def show_relevant(self, purify=False):
         contents = self.contents
@@ -83,11 +87,12 @@ class Paperls:
                     pcontent['summary'] = c.get('summary', None)
                     pcontent['keyword'] = c.get('keyword', None)
                     pcontent['weight'] = c.get('weight', None)
+                    pcontent['tags'] = c.get('tags', None)
                     pcontents.append(pcontent)
             return sorted(pcontents, key=lambda s: s['weight'], reverse=True)
 
     def mail(self, maildict, headline='Below is the summary of highlights on arXiv based on your interests'):
-        rs = self.show_relevant(purify=True)
+        rs = self.show_relevant()
         if rs:
             maildict['content'] = makemailcontent(headline, rs)
             maildict['title'] = 'Report on highlight of arXiv'
@@ -143,3 +148,12 @@ def new_submission(url, mode=1, samedate=False):
         contents.append(content)
 
     return contents
+
+def select_tags(kw_rank):
+    high_res = [c[0] for c in kw_rank if c[1]>7.9]
+    if len(high_res) == 0:
+        return [kw_rank[0][0]]
+    elif len(high_res) <= 5:
+        return high_res
+    else:
+        return high_res[:5]
