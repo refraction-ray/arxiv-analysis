@@ -1,6 +1,7 @@
 ## Urgent
 
 - [x] issue when there is no replacement list
+- [x] decouple keywords match and adding tags
 
 ## Near term
 

@@ -47,8 +47,10 @@ class Paperls:
                                             sort_by=sort_by, sort_order=sort_order)
             idextract = re.compile('.*/([0-9.]*)')
             for c in self.contents:
-                c['title'] = re.sub(r'\n|  ', ' ', c.get('title', ''))
-                c['summary'] = re.sub(r'\n|  ', ' ', c.get('summary', ''))
+                c['title'] = re.subn(r'\n|  ', ' ', c.get('title', ''))[0]
+                c['title'] = re.subn(r'  ', ' ', c.get('title', ''))[0]
+                c['summary'] = re.subn(r'\n|  ', ' ', c.get('summary', ''))[0]
+                c['summary'] = re.subn(r'  ', ' ', c.get('summary', ''))[0]
                 c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
         elif search_mode == 2:  # new submission fetch
             self.url = "https://arxiv.org/list/" + search_query + "/new"
@@ -63,14 +65,17 @@ class Paperls:
             if c['arxiv_id'] not in idlist:
                 self.contents.append(c)
 
-    def interest_match(self, choices, stoplistpath='SmartStopList.txt'):
+    def interest_match(self, choices):
         contents = self.contents
         for content in contents:
             content['keyword'] = keyword_match(
                 content['title'] + '. ' + content['title'] + '. ' + ','.join(content['authors']) + '. ' +
                 content['summary'], choices)
             content['weight'] = sum([choices[kw[0]] for kw in content['keyword']])
-            rake = Rake(stoplistpath)
+
+    def tagging(self, stoplistpath='SmartStopList.txt'):
+        rake = Rake(stoplistpath)
+        for content in self.contents:
             content['tags'] = select_tags(
                 rake.run(content['title'] + ". " + content['summary'] + " " + content['title']))
 
@@ -177,6 +182,12 @@ def select_tags(kw_rank):
 
 
 def kw_lst2dict(choices):
+    '''
+    convert list of keywords to standard dict of keywords with matching weight
+
+    :param choices: list of strings, keywords
+    :return: dict, keyword: weight
+    '''
     if isinstance(choices, dict):
         return choices
     kwdict = {}

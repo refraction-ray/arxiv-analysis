@@ -1,3 +1,5 @@
+--
+---
 a
 a's
 able
@@ -5,6 +7,7 @@ about
 above
 according
 accordingly
+accurately
 across
 actually
 affect
@@ -43,6 +46,7 @@ anyways
 anywhere
 apart
 appear
+appears
 appreciate
 appropriate
 are
@@ -90,6 +94,8 @@ can
 can't
 cannot
 cant
+capable
+carefully
 cause
 causes
 certain
@@ -107,6 +113,8 @@ combined
 combining
 come
 comes
+compare
+comparing
 concerning
 conclude
 concluding
@@ -130,14 +138,16 @@ couldn't
 course
 currently
 decreases
-definitelydefinitely
+definitely
 depend
 depending
 depends
 derive
 derived
 derives
+describe
 described
+describing
 despite
 determined
 determining
@@ -206,6 +216,8 @@ exist
 exists
 explore
 exploring
+extracts
+extrapolating
 fairly
 far
 few
@@ -223,13 +235,14 @@ for
 former
 formerly
 forth
-four
 from
 further
 furthermore
+generates
 get
 gets
 getting
+give
 given
 gives
 go
@@ -284,6 +297,7 @@ ie
 if
 ignored
 immediate
+implies
 imply
 implying
 impose
@@ -310,6 +324,9 @@ instead
 interest
 interests
 into
+introduced
+introduces
+involves
 involving
 inward
 is
@@ -321,7 +338,6 @@ it's
 its
 itself
 just
-k
 keep
 keeps
 kept
@@ -357,6 +373,7 @@ mean
 meanwhile
 measure
 measuring
+meets
 merely
 might
 months
@@ -364,6 +381,8 @@ more
 moreover
 most
 mostly
+motivate
+motivates
 much
 must
 my
@@ -420,7 +439,6 @@ okay
 old
 on
 once
-one
 ones
 only
 onto
@@ -455,6 +473,7 @@ postulates
 predict
 predicting
 predicts
+presents
 presumably
 probably
 produce
@@ -474,6 +493,7 @@ rather
 rd
 re
 realize
+realizes
 realizing
 really
 reasonably
@@ -493,6 +513,8 @@ reports
 reproduce
 require
 required
+requires
+requiring
 respectively
 result
 resulting
@@ -536,6 +558,8 @@ similarly
 since
 six
 so
+so-called
+socalled
 some
 somebody
 somehow
@@ -564,6 +588,7 @@ support
 supported
 supporting
 sure
+systematically
 t's
 take
 taken
@@ -607,7 +632,6 @@ thorough
 thoroughly
 those
 though
-three
 through
 throughout
 thru
@@ -624,9 +648,10 @@ truly
 try
 trying
 twice
-two
 un
 under
+undergoes
+undergoing
 unfortunately
 unless
 unlikely
@@ -642,7 +667,6 @@ uses
 using
 usually
 uucp
-value
 various
 very
 via
@@ -702,6 +726,8 @@ wouldn't
 years
 yes
 yet
+yielding
+yields
 you
 you'd
 you'll
@@ -711,4 +737,3 @@ your
 yours
 yourself
 yourselves
-zero
