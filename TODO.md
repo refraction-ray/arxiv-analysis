@@ -10,8 +10,9 @@
 - [ ] update README
 - [ ] setup doc by sphnix
 - [ ] add CHANGELOG
-- [ ] unfied subject key of Paperls
+- [x] unfied subject key of Paperls
 - [ ] auto classify the announce date of papers
+- [ ] link of authors
 
 ## Furture plan
 

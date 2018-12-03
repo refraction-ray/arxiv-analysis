@@ -29,7 +29,7 @@ def makehtml(content, count):
     if content.get('tags', None):
         htmltext2 += '<p class="tags">'
         for t in content['tags']:
-            htmltext2 += '<span class="tag"> %s </span> &nbsp' % t
+            htmltext2 += '<span class="tag"> %s </span> &nbsp' % t[0]
         htmltext2 += '</p>'
     htmltext3 = ('<hr>'
                  '<p class="summary">%s</p>') % (content['summary'])

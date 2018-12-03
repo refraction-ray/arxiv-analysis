@@ -1,4 +1,5 @@
 .DS_Store
+examples/
 __pycache__/
 .idea/
 develop/

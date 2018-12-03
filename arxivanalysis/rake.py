@@ -109,7 +109,7 @@ def calculate_word_scores(phraseList):
     for item in word_frequency:
         word_score.setdefault(item, 0)
         word_score[item] = word_degree[item] / (word_frequency[item] * 1.0)  #orig.
-    #word_score[item] = word_frequency[item]/(word_degree[item] * 1.0) #exp.
+        # word_score[item] = word_frequency[item]*(word_degree[item] * 1.0) #exp.
     return word_score
 
 

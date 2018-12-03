@@ -10,8 +10,7 @@ from arxivanalysis.arxiv import query
 from arxivanalysis.notification import sendmail, makemailcontent
 from datetime import datetime
 from arxivanalysis.rake import Rake
-
-weekdaylist = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+from arxivanalysis.cons import weekdaylist, category
 
 
 class arxivException(Exception):
@@ -52,6 +51,8 @@ class Paperls:
                 c['summary'] = re.subn(r'\n|  ', ' ', c.get('summary', ''))[0]
                 c['summary'] = re.subn(r'  ', ' ', c.get('summary', ''))[0]
                 c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
+                c['subject_abbr'] = [d['term'] for d in c['tags']]
+                c['subject'] = [category.get(d['term'], None) + " (%s)" % d['term'] for d in c['tags']]
         elif search_mode == 2:  # new submission fetch
             self.url = "https://arxiv.org/list/" + search_query + "/new"
             samedate = False
@@ -76,8 +77,8 @@ class Paperls:
     def tagging(self, stoplistpath='SmartStopList.txt'):
         rake = Rake(stoplistpath)
         for content in self.contents:
-            content['tags'] = select_tags(
-                rake.run(content['title'] + ". " + content['summary'] + " " + content['title']))
+            content['tags'] = deduplicate_tags(select_tags(
+                rake.run(content['title'] + ". " + content['summary'] + " " + content['title'])))
 
     def show_relevant(self, purify=False):
         contents = self.contents
@@ -93,15 +94,16 @@ class Paperls:
                     pcontent['title'] = c.get('title', None)
                     pcontent['authors'] = c.get('authors', None)
                     pcontent['subject'] = c.get('subject', None)
+                    pcontent['subject_abbr'] = c.get('subject_abbr', None)
                     pcontent['summary'] = c.get('summary', None)
                     pcontent['keyword'] = c.get('keyword', None)
                     pcontent['weight'] = c.get('weight', None)
-                    pcontent['tags'] = c.get('tags', None)
+                    pcontent['tags'] = select_tags(c.get('tags', None), max_num=5, threhold=7.9)
                     pcontents.append(pcontent)
             return sorted(pcontents, key=lambda s: s['weight'], reverse=True)
 
     def mail(self, maildict, headline='Below is the summary of highlights on arXiv based on your interests'):
-        rs = self.show_relevant()
+        rs = self.show_relevant(purify=True)
         if rs:
             maildict['content'] = makemailcontent(headline, rs)
             maildict['title'] = 'Report on highlight of arXiv'
@@ -153,6 +155,7 @@ def new_submission(url, mode=1, samedate=False):
 
     newno = len(newc('span', class_='list-identifier'))
     contents = []
+    subjectabbr_filter = re.compile(r'^.*[(](.*)[)]')
     for i in range(newno):
         content = {}
         id_ = list(newc('span', class_='list-identifier')[i].children)[0].text
@@ -164,6 +167,7 @@ def new_submission(url, mode=1, samedate=False):
         content['authors'] = [re.subn(r'\n|Authors:', '', author)[0].strip() for author in author.split(',')]
         subject = newc('div', class_="list-subjects")[i].text
         content['subject'] = [re.subn(r'\n|Subjects: ', '', sub.strip())[0] for sub in subject.split(r';')]
+        content['subject_abbr'] = [subjectabbr_filter.match(d).group(1) for d in content['subject']]
         abstract = newc('p', class_="mathjax")[i].text
         content['summary'] = re.subn(r'\n', ' ', abstract)[0]
         contents.append(content)
@@ -171,14 +175,31 @@ def new_submission(url, mode=1, samedate=False):
     return contents
 
 
-def select_tags(kw_rank):
-    high_res = [c[0] for c in kw_rank if c[1] > 7.9]
+def select_tags(kw_rank, max_num=15, threhold=3.9):
+    high_res = [c for c in kw_rank if c[1] > threhold]
     if len(high_res) == 0:
-        return [kw_rank[0][0]]
-    elif len(high_res) <= 5:
+        return [kw_rank[0]]
+    elif len(high_res) <= max_num:
         return high_res
     else:
-        return high_res[:5]
+        return high_res[:max_num]
+
+
+def deduplicate_tags(kw_rank, threhold=75):
+    len_kw = len(kw_rank)
+    mask = [True for _ in range(len_kw)]
+    for i in range(len_kw):
+        if mask[i] is True:
+            for j in range(i + 1, len_kw):
+                if mask[j] is True:
+                    if fuzz.partial_ratio(kw_rank[i][0], kw_rank[j][0]) > threhold:
+                        if len(kw_rank[i][0]) > len(kw_rank[j][0]):
+                            mask[i] = False
+                            break
+                        else:
+                            mask[j] = False
+
+    return [kw for i, kw in enumerate(kw_rank) if mask[i] is True]
 
 
 def kw_lst2dict(choices):
