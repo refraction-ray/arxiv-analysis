@@ -119,6 +119,7 @@ concerning
 conclude
 concluding
 conclusion
+confirm
 consequently
 consider
 considerably
@@ -168,6 +169,7 @@ displaying
 displays
 do
 does
+doesn
 doesn't
 doing
 don't
@@ -195,6 +197,7 @@ enough
 entirely
 equals
 especially
+essentially
 et
 etc
 even
@@ -324,8 +327,10 @@ instead
 interest
 interests
 into
+introduce
 introduced
 introduces
+involve
 involves
 involving
 inward
@@ -443,6 +448,7 @@ ones
 only
 onto
 or
+originated
 originating
 other
 others
@@ -654,7 +660,9 @@ undergoes
 undergoing
 unfortunately
 unless
+unlike
 unlikely
+unlikes
 until
 unto
 up

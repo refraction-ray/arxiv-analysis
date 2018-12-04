@@ -52,7 +52,7 @@ class Paperls:
                 c['summary'] = re.subn(r'  ', ' ', c.get('summary', ''))[0]
                 c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
                 c['subject_abbr'] = [d['term'] for d in c['tags']]
-                c['subject'] = [category.get(d['term'], None) + " (%s)" % d['term'] for d in c['tags']]
+                c['subject'] = [category.get(d['term'], "") + " (%s)" % d['term'] for d in c['tags']]
         elif search_mode == 2:  # new submission fetch
             self.url = "https://arxiv.org/list/" + search_query + "/new"
             samedate = False
@@ -112,7 +112,7 @@ class Paperls:
                 raise arxivException('mail sending failed')
 
 
-def keyword_match(text, kwlist, threhold=80):
+def keyword_match(text, kwlist, threhold=75):
     rs = [(kw, fuzz.partial_ratio(kw, text)) for kw in kwlist]
     return [r for r in rs if r[-1] > threhold]
 
@@ -175,7 +175,7 @@ def new_submission(url, mode=1, samedate=False):
     return contents
 
 
-def select_tags(kw_rank, max_num=15, threhold=3.9):
+def select_tags(kw_rank, max_num=10, threhold=3.9):
     high_res = [c for c in kw_rank if c[1] > threhold]
     if len(high_res) == 0:
         return [kw_rank[0]]
