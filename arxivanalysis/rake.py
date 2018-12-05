@@ -94,7 +94,7 @@ def calculate_word_scores(phraseList):
         word_list_length = len(word_list)
         word_list_degree = word_list_length - 1
         if word_list_degree > 3:
-            word_list_degree = 3+0.3*(word_list_length-4) #exp.
+            word_list_degree = 3+0.2*(word_list_length-4) #exp.
         for word in word_list:
             word_frequency.setdefault(word, 0)
             word_frequency[word] += 1
