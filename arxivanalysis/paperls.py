@@ -112,9 +112,15 @@ class Paperls:
                 raise arxivException('mail sending failed')
 
 
-def keyword_match(text, kwlist, threhold=50):
-    rs = [(kw, fuzz.token_set_ratio(kw, text)) for kw in kwlist]
-    return [r for r in rs if r[-1] > threhold]
+def keyword_match(text, kwlist, threhold=(90, 80)):
+    r = []
+    for kw in kwlist:
+        tsr_score = fuzz.token_set_ratio(kw, text)
+        pr_score = fuzz.partial_ratio(kw, text)
+        if tsr_score > threhold[0] or pr_score > threhold[1]:
+            r.append((kw, tsr_score, pr_score))
+    # note the issue on which matching function to use here
+    return r
 
 
 def new_submission(url, mode=1, samedate=False):

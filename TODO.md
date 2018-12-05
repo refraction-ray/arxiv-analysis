@@ -18,6 +18,7 @@
 ## Furture plan
 
 - [ ] paper metadata into database
+- [ ] auto generate paper-style text
 - [ ] webapp for arxiv analysis
 - [ ] more machine learning techinques on arxiv papers to extract hot trend
 - [ ] paper relevance and recommendations

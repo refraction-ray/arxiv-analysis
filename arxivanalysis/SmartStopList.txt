@@ -8,6 +8,7 @@ above
 according
 accordingly
 accurately
+acquires
 across
 actually
 affect
@@ -58,6 +59,8 @@ ask
 asking
 associated
 at
+attract
+attracts
 available
 away
 awfully
@@ -115,6 +118,7 @@ come
 comes
 compare
 comparing
+composed
 concerning
 conclude
 concluding
@@ -148,6 +152,7 @@ derived
 derives
 describe
 described
+describes
 describing
 despite
 determined
@@ -172,6 +177,7 @@ does
 doesn
 doesn't
 doing
+dominates
 don't
 done
 down
@@ -193,6 +199,8 @@ employed
 employing
 enable
 enables
+encouter
+encouters
 enough
 entirely
 equals
@@ -219,6 +227,7 @@ exist
 exists
 explore
 exploring
+extract
 extracts
 extrapolating
 fairly
@@ -241,6 +250,7 @@ forth
 from
 further
 furthermore
+generally
 generates
 get
 gets
@@ -287,6 +297,7 @@ himself
 his
 hither
 hopefully
+hosts
 how
 howbeit
 however
@@ -399,6 +410,7 @@ nd
 near
 nearby
 nearly
+necessarily
 necessary
 need
 needs
@@ -421,6 +433,8 @@ nothing
 novel
 now
 nowhere
+obey
+obeys
 observe
 observed
 obtain
@@ -476,11 +490,14 @@ possesses
 possible
 postulate
 postulates
+powerful
 predict
 predicting
 predicts
+present
 presents
 presumably
+prevents
 probably
 produce
 producing
@@ -526,6 +543,7 @@ result
 resulting
 results
 reveal
+revealed
 revealing
 reveals
 right
@@ -582,8 +600,10 @@ specify
 specifying
 still
 studied
+studies
 study
 sub
+subject
 such
 sufficiently
 suggest
@@ -659,6 +679,7 @@ under
 undergoes
 undergoing
 unfortunately
+unifies
 unless
 unlike
 unlikely
