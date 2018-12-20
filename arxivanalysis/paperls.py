@@ -6,6 +6,7 @@ from fuzzywuzzy import fuzz
 import requests
 from bs4 import BeautifulSoup
 import re
+from datetime import date, timedelta
 from arxivanalysis.arxiv import query
 from arxivanalysis.notification import sendmail, makemailcontent
 from datetime import datetime
@@ -53,12 +54,16 @@ class Paperls:
                 c['arxiv_id'] = idextract.match(c['arxiv_url']).group(1)
                 c['subject_abbr'] = [d['term'] for d in c['tags']]
                 c['subject'] = [category.get(d['term'], "") + " (%s)" % d['term'] for d in c['tags']]
+                c['announce_date'] = announce_date_converter(c['published_parsed'])
         elif search_mode == 2:  # new submission fetch
             self.url = "https://arxiv.org/list/" + search_query + "/new"
             samedate = False
             if sort_by == "submittedDate":
                 samedate = True
             self.contents = new_submission(self.url, mode=start, samedate=samedate)
+
+        self.count = 0
+        self.search_query = search_query
 
     def merge(self, paperlsobj):
         idlist = [c['arxiv_id'] for c in self.contents]
@@ -99,6 +104,7 @@ class Paperls:
                     pcontent['keyword'] = c.get('keyword', None)
                     pcontent['weight'] = c.get('weight', None)
                     pcontent['tags'] = select_tags(c.get('tags', None), max_num=5, threhold=7.9)
+                    pcontent['announce_date'] = c.get('announce_date', None)
                     pcontents.append(pcontent)
             return sorted(pcontents, key=lambda s: s['weight'], reverse=True)
 
@@ -110,6 +116,17 @@ class Paperls:
             ret = sendmail(**maildict)
             if not ret:
                 raise arxivException('mail sending failed')
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.count >= len(self.contents):
+            self.count = 0
+            raise StopIteration
+        else:
+            self.count += 1
+            return self.contents[self.count - 1]
 
 
 def keyword_match(text, kwlist, threhold=(90, 80)):
@@ -176,6 +193,7 @@ def new_submission(url, mode=1, samedate=False):
         content['subject_abbr'] = [subjectabbr_filter.match(d).group(1) for d in content['subject']]
         abstract = newc('p', class_="mathjax")[i].text
         content['summary'] = re.subn(r'\n', ' ', abstract)[0]
+        content['announce_date'] = date.today().strftime('%Y-%m-%d')
         contents.append(content)
 
     return contents
@@ -224,3 +242,14 @@ def kw_lst2dict(choices):
     for i, c in enumerate(choices):
         kwdict[c] = l - i
     return kwdict
+
+
+def announce_date_converter(parsed_date):
+    dt = date(parsed_date.tm_year, parsed_date.tm_mon, parsed_date.tm_mday)
+    if parsed_date.tm_hour > 14:
+        dt = dt + timedelta(days=1)
+    if dt.weekday() == 5:
+        dt = dt + timedelta(days=2)
+    elif dt.weekday() == 6:
+        dt = dt + timedelta(days=1)
+    return dt.strftime('%Y-%m-%d')
