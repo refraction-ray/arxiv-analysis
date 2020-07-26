@@ -1,4 +1,5 @@
 fuzzywuzzy==0.17.0
 feedparser==5.2.1
-requests==2.20.1
-beautifulsoup4==4.6.3
+requests
+beautifulsoup4
+lxml
