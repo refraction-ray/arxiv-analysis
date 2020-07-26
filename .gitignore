@@ -3,3 +3,7 @@ examples/
 __pycache__/
 .idea/
 develop/
+app/
+alembic*
+wsgi*
+config.py
