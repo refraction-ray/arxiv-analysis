@@ -4,7 +4,7 @@ sys.path.insert(0, "./")
 from arxivanalysis.paperls import Paperls, kw_lst2dict
 import requests
 
-stoppath = "../arxivanalysis/SmartStopList.txt"
+stoppath = "./arxivanalysis/SmartStopList.txt"
 
 
 def read_kw(choices):
