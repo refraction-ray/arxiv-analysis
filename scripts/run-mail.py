@@ -1,6 +1,6 @@
 import sys
 
-sys.path.insert(0, "../")
+sys.path.insert(0, "./")
 from arxivanalysis.paperls import Paperls, kw_lst2dict
 import requests
 
