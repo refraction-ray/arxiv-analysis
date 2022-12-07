@@ -52,7 +52,7 @@ def main():
                         search_mode=2,
                         search_query=sub,
                         start=0,
-                        # sort_by="submittedDate",
+                        sort_by="submittedDate",
                     )
                     pl.tagging(stoppath)
                     _paper_ls_dict[sub] = pl
