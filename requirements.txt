@@ -1,3 +1,4 @@
+pip==23.0
 setuptools~=57.5.0
 fuzzywuzzy==0.17.0
 feedparser==5.2.1
