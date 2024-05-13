@@ -200,7 +200,7 @@ def new_submission(url, mode=1, samedate=False):
             weekdaystr = date_filter.match(so("h3")[0].string).group(1)
         except AttributeError:
             return []
-        if weekdaylist[datetime.today().weekday()] != weekdaystr:
+        if weekdaylist[datetime.today().weekday()] != weekdaystr[:3]:
             return []
 
     submission_pattern = re.compile(r"(.*) for .*")
@@ -221,31 +221,75 @@ def new_submission(url, mode=1, samedate=False):
     else:
         return []
 
-    newno = len(newc("span", class_="list-identifier"))
+    # newno = len(newc("div", class_="list-title"))
+
     contents = []
     subjectabbr_filter = re.compile(r"^.*[(](.*)[)]")
-    for i in range(newno):
+    ##  old version before 24.05
+    # newno = len(newc("span", class_="list-identifier"))
+    # for i in range(newno):
+    #     content = {}
+    #     id_ = list(newc("span", class_="list-identifier")[i].children)[0].text
+    #     content["arxiv_id"] = re.subn(r"arXiv:", "", id_)[0]
+    #     content["arxiv_url"] = "https://arxiv.org/abs/" + content["arxiv_id"]
+    #     title = newc("div", class_="list-title mathjax")[i].text
+    #     content["title"] = re.subn(r"\n|Title: ", "", title)[0]
+    #     author = newc("div", class_="list-authors")[i].text
+    #     content["authors"] = [
+    #         re.subn(r"\n|Authors:", "", author)[0].strip()
+    #         for author in author.split(",")
+    #     ]
+    #     subject = newc("div", class_="list-subjects")[i].text
+    #     content["subject"] = [
+    #         re.subn(r"\n|Subjects: ", "", sub.strip())[0] for sub in subject.split(r";")
+    #     ]
+    #     content["subject_abbr"] = [
+    #         subjectabbr_filter.match(d).group(1) for d in content["subject"]
+    #     ]
+    #     abstract = newc("p", class_="mathjax")[i].text
+    #     content["summary"] = re.subn(r"\n", " ", abstract)[0]
+    #     content["announce_date"] = date.today().strftime("%Y-%m-%d")
+    #     contents.append(content)
+
+    ## new crawler version for new arxiv html after 24.05, assisted by kimi
+    for item in newc.find_all("dd"):
+        dt_tag = item.find_previous("dt")
         content = {}
-        id_ = list(newc("span", class_="list-identifier")[i].children)[0].text
-        content["arxiv_id"] = re.subn(r"arXiv:", "", id_)[0]
-        content["arxiv_url"] = "https://arxiv.org/abs/" + content["arxiv_id"]
-        title = newc("div", class_="list-title mathjax")[i].text
-        content["title"] = re.subn(r"\n|Title: ", "", title)[0]
-        author = newc("div", class_="list-authors")[i].text
+
+        # Extract the arXiv ID and URL
+        arxiv_id_link = dt_tag.find("a", href=True)
+        content["arxiv_id"] = re.sub(r"^/abs/", "", arxiv_id_link["href"])
+        content["arxiv_url"] = f"https://arxiv.org/abs/{content['arxiv_id']}"
+
+        # Extract the title
+        title = item.find("div", class_="list-title mathjax").text
+        content["title"] = re.sub(r"\n|Title:", "", title).strip()
+
+        # Extract authors
+        authors_div = item.find("div", class_="list-authors")
+        authors = authors_div.text if authors_div else ""
         content["authors"] = [
-            re.subn(r"\n|Authors:", "", author)[0].strip()
-            for author in author.split(",")
+            re.sub(r"\n|Authors: ", "", author).strip() for author in authors.split(",")
         ]
-        subject = newc("div", class_="list-subjects")[i].text
+
+        # Extract subjects
+        subjects_div = item.find("div", class_="list-subjects")
+        subjects = subjects_div.text if subjects_div else ""
         content["subject"] = [
-            re.subn(r"\n|Subjects: ", "", sub.strip())[0] for sub in subject.split(r";")
+            re.sub(r"\n|Subjects:", "", sub.strip()) for sub in subjects.split(";")
         ]
         content["subject_abbr"] = [
             subjectabbr_filter.match(d).group(1) for d in content["subject"]
         ]
-        abstract = newc("p", class_="mathjax")[i].text
-        content["summary"] = re.subn(r"\n", " ", abstract)[0]
+
+        # Extract the abstract
+        abstract = item.find("p", class_="mathjax").text
+        content["summary"] = re.sub(r"\n", " ", abstract).strip()
+
+        # Set the announcement date
         content["announce_date"] = date.today().strftime("%Y-%m-%d")
+
+        # Append the content dictionary to the contents list
         contents.append(content)
     return contents
 
