@@ -195,7 +195,7 @@ def new_submission(url, mode=1, samedate=False):
     pa = requests.get(url)
     so = BeautifulSoup(pa.text, "lxml")
     if samedate is True:
-        date_filter = re.compile(r"^New submissions for ([a-zA-Z]+), .*")
+        date_filter = re.compile(r"^Showing new listings for ([a-zA-Z]+), .*")
         try:
             weekdaystr = date_filter.match(so("h3")[0].string).group(1)
         except AttributeError:
@@ -203,10 +203,10 @@ def new_submission(url, mode=1, samedate=False):
         if weekdaylist[datetime.today().weekday()] != weekdaystr[:3]:
             return []
 
-    submission_pattern = re.compile(r"(.*) for .*")
+    submission_pattern = re.compile(r"(.*) \(showing .*")
     submission_list = so("h3")
     submission_dict = {}
-    for s in submission_list:
+    for s in submission_list[1:]:
         dict_key = submission_pattern.match(s.string).group(1)
         submission_dict[dict_key] = True
 
