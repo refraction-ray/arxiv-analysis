@@ -58,6 +58,7 @@ def main():
                     _paper_ls_dict[sub] = pl
                     lst.merge(_paper_ls_dict[sub])
             lst.interest_match(choices)
+            # print(lst.contents)
             lst.mail(maildict)
 
 
